@@ -1,13 +1,18 @@
 class JSONCParser {
     private let scanner: JSONCScanner
+    private(set) var comments: [Token] = []
 
-    init(jsoncString: String) throws {
+    init(jsoncString: String) {
         scanner = .init(jsoncString: jsoncString)
     }
 
     func parse() throws -> Value {
         try scanNext()
-        return try parseValue()
+        let value = try parseValue()
+        guard scanner.token.kind == .eof else {
+            throw ParsingError.eofExpected(loc: scanner.token.loc)
+        }
+        return value
     }
 
     @discardableResult
@@ -16,6 +21,7 @@ class JSONCParser {
             let token = try scanner.scanToken()
             switch token.kind {
             case .lineComment, .blockComment:
+                comments.append(token)
                 break
             default:
                 return token

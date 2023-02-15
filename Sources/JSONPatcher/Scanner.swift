@@ -69,4 +69,5 @@ enum ParsingError: Error {
     case colonExpected(loc: Loc)
     case rightBraceExpected(loc: Loc)
     case rightBracketExpected(loc: Loc)
+    case eofExpected(loc: Loc)
 }
