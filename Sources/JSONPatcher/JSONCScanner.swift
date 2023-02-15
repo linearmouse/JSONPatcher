@@ -1,18 +1,21 @@
-public class JSONCScanner {
+class JSONCScanner {
     private let scanner: Scanner
 
-    private(set) var token: Token?
+    private(set) var token: Token
     private var startIndex: String.Index
 
     init(jsoncString: String) {
         scanner = .init(string: jsoncString)
         startIndex = jsoncString.startIndex
+        token = .init(kind: .unknown, value: "", loc: startIndex..<startIndex)
     }
 
+    @discardableResult
     func scanToken() throws -> Token {
+        token = .init(kind: .unknown, value: "", loc: startIndex..<startIndex)
         try nextToken()
-        assert(token != nil)
-        return token!
+        assert(token.kind != .unknown)
+        return token
     }
 
     private func nextToken() throws {
@@ -203,7 +206,7 @@ public class JSONCScanner {
     }
 }
 
-public extension JSONCScanner {
+extension JSONCScanner {
     struct Token {
         let kind: Kind
         let value: Substring
@@ -211,8 +214,9 @@ public extension JSONCScanner {
     }
 }
 
-public extension JSONCScanner.Token {
+extension JSONCScanner.Token {
     enum Kind {
+        case unknown
         case leftBrace, rightBrace
         case leftBracket, rightBracket
         case comma

@@ -1,9 +1,9 @@
-@testable import SwiftJSONC
+@testable import JSONPatcher
 import XCTest
 
 final class JSONCScannerTests: XCTestCase {
     override func setUp() {
-         continueAfterFailure = false
+        continueAfterFailure = false
     }
 
     // https://github.com/microsoft/node-jsonc-parser/blob/main/src/test/json.test.ts
@@ -171,8 +171,9 @@ final class JSONCScannerTests: XCTestCase {
     }
 
     private func assertKinds(_ jsoncString: String, _ kinds: JSONCScanner.Token.Kind...,
-                            in file: StaticString = #file,
-                            line: UInt = #line) throws {
+                             in file: StaticString = #file,
+                             line: UInt = #line) throws
+    {
         let scanner = JSONCScanner(jsoncString: jsoncString)
         for kind in kinds {
             let token = try scanner.scanToken()
@@ -185,7 +186,8 @@ final class JSONCScannerTests: XCTestCase {
                                           _ kinds: JSONCScanner.Token.Kind...,
                                           assertion: (ParsingError) -> Bool,
                                           in file: StaticString = #file,
-                                          line: UInt = #line) throws {
+                                          line: UInt = #line) throws
+    {
         let scanner = JSONCScanner(jsoncString: jsoncString)
         for kind in kinds {
             let token = try scanner.scanToken()

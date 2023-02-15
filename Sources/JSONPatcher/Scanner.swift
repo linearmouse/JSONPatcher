@@ -54,7 +54,7 @@ class Scanner {
     }
 }
 
-public enum ParsingError: Error {
+enum ParsingError: Error {
     case unexpectedEOF(loc: Loc)
     case unexpectedInput(loc: Loc, actual: String, expected: String)
     case invalidCommentStart(loc: Loc, character: Character)
@@ -62,4 +62,11 @@ public enum ParsingError: Error {
     case invalidCharacter(loc: Loc, character: Character)
     case unexpectedEndOfString(loc: Loc)
     case invalidNumberDigit(loc: Loc, character: Character)
+    case valueExpected(loc: Loc)
+    case unexpectedToken(loc: Loc, kind: JSONCScanner.Token.Kind)
+    case commaExpected(loc: Loc)
+    case memberNameExpected(loc: Loc)
+    case colonExpected(loc: Loc)
+    case rightBraceExpected(loc: Loc)
+    case rightBracketExpected(loc: Loc)
 }
