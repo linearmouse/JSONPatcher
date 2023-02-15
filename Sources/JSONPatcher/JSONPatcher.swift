@@ -3,7 +3,7 @@ public class JSONPatcher {
     private let original: String
     private let originalValue: JSONCParser.Value
 
-    init(original: String) throws {
+    public init(original: String) throws {
         self.parser = JSONCParser(jsoncString: original)
         self.original = original
         originalValue = try parser.parse()
@@ -12,7 +12,7 @@ public class JSONPatcher {
     /**
      Strips comments and returns valid JSON.
      */
-    func json() -> String {
+    public func json() -> String {
         var stripped = original
         for token in parser.comments.reversed() {
             stripped.removeSubrange(token.loc)
