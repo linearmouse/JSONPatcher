@@ -10,7 +10,9 @@ class JSONCParser {
         try scanNext()
         let value = try parseValue()
         guard scanner.token.kind == .eof else {
-            throw ParsingError.eofExpected(loc: scanner.token.loc)
+            throw ParsingError.unexpectedToken(loc: scanner.token.loc,
+                                               got: scanner.token.kind,
+                                               wanted: .eof)
         }
         return value
     }
@@ -35,7 +37,7 @@ class JSONCParser {
         case .unknown:
             fatalError()
         case .eof:
-            throw ParsingError.valueExpected(loc: token.loc)
+            throw ParsingError.valueExpected(loc: token.loc, got: .eof)
         case .leftBrace:
             return try parseObject()
         case .leftBracket:
@@ -56,7 +58,7 @@ class JSONCParser {
             try scanNext()
             return .null(token)
         default:
-            throw ParsingError.unexpectedToken(loc: token.loc, kind: token.kind)
+            throw ParsingError.unexpectedToken(loc: token.loc, got: token.kind)
         }
     }
 
@@ -74,23 +76,22 @@ class JSONCParser {
             break parseMembers
         case .comma:
             if !needsComma {
-                throw ParsingError.valueExpected(loc: scanner.token.loc)
+                throw ParsingError.valueExpected(loc: scanner.token.loc, got: .comma)
             }
             try scanNext() // ,
-        default:
+        case let kind:
             if needsComma {
-                throw ParsingError.commaExpected(loc: scanner.token.loc)
+                throw ParsingError.unexpectedToken(loc: scanner.token.loc, got: kind, wanted: .comma)
             }
         }
 
     parseMember: do {
         guard scanner.token.kind == .string else {
-            throw ParsingError.memberNameExpected(loc: scanner.token.loc)
+            throw ParsingError.memberNameExpected(loc: scanner.token.loc, got: scanner.token.kind)
         }
         let memberName = try parseValue()
-        try scanNext() // memberName
         guard scanner.token.kind == .colon else {
-            throw ParsingError.colonExpected(loc: scanner.token.loc)
+            throw ParsingError.unexpectedToken(loc: scanner.token.loc, got: scanner.token.kind, wanted: .colon)
         }
         try scanNext() // :
         let memberValue = try parseValue()
@@ -102,7 +103,7 @@ class JSONCParser {
 
         let rightBrace = scanner.token
         guard rightBrace.kind == .rightBrace else {
-            throw ParsingError.rightBraceExpected(loc: rightBrace.loc)
+            throw ParsingError.unexpectedToken(loc: rightBrace.loc, got: rightBrace.kind, wanted: .rightBrace)
         }
         try scanNext() // }
 
@@ -123,12 +124,12 @@ class JSONCParser {
             break parseElements
         case .comma:
             if !needsComma {
-                throw ParsingError.valueExpected(loc: scanner.token.loc)
+                throw ParsingError.valueExpected(loc: scanner.token.loc, got: .comma)
             }
             try scanNext() // ,
-        default:
+        case let kind:
             if needsComma {
-                throw ParsingError.commaExpected(loc: scanner.token.loc)
+                throw ParsingError.unexpectedToken(loc: scanner.token.loc, got: kind, wanted: .comma)
             }
         }
 
@@ -142,7 +143,7 @@ class JSONCParser {
 
         let rightBracket = scanner.token
         guard rightBracket.kind == .rightBracket else {
-            throw ParsingError.rightBracketExpected(loc: rightBracket.loc)
+            throw ParsingError.unexpectedToken(loc: rightBracket.loc, got: rightBracket.kind, wanted: .rightBracket)
         }
         try scanNext() // ]
 
