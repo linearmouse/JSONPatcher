@@ -147,9 +147,7 @@ class JSONCScanner {
 
         func consumeDigits() throws {
             switch try scanner.nextCharacter() {
-            case "0":
-                return
-            case "1"..."9":
+            case "0"..."9":
                 while !scanner.eof, ("0"..."9").contains(try scanner.peekCharacter()) {
                     try scanner.advance(by: 1)
                 }
@@ -163,7 +161,12 @@ class JSONCScanner {
         if try scanner.peekCharacter() == "-" {
             try scanner.advance(by: 1)
         }
-        try consumeDigits()
+        if try scanner.nextCharacter() == "0" {
+            break integer
+        }
+        if !scanner.eof, ("0"..."9").contains(try scanner.peekCharacter()) {
+            try consumeDigits()
+        }
     }
 
     fraction: do {
